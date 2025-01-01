@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TextField, Button, Avatar, Box, Typography, SpeedDial, SpeedDialIcon, SpeedDialAction, Grid2, Paper, IconButton, Card } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { AddCircleOutline, FacebookRounded, Instagram, LinkedIn, Twitter } from '@mui/icons-material';
+import { TextField, Button, Typography, Grid2 } from '@mui/material';
+import { FacebookRounded, Instagram, LinkedIn, Twitter } from '@mui/icons-material';
 import AvatarUploader from '../components/ProfileEditor/AvatarUploader';
 import ProfileCard from '../components/ProfileEditor/ProfileCard';
 import SocialLinksManager from '../components/ProfileEditor/SocialLinkManager';
