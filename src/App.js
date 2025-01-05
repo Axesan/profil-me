@@ -7,6 +7,7 @@ import { Container } from '@mui/material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 
 // Création du thème
 let theme = createTheme({
@@ -66,6 +67,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
             {/* Route proteger */}
             <Route path="/editor" element={<ProfileEditor />} />
 
