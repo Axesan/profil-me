@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 
 const pages = [
     { name: 'Home', path: '/' },
+    { name: 'Login', path: '/login' },
     { name: 'Editor', path: '/editor' },
 ];
 const userLoginSettings = [

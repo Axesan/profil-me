@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import { Container } from '@mui/material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import Login from './pages/Login';
 
 // Création du thème
 let theme = createTheme({
@@ -64,6 +65,7 @@ function App() {
         <Container sx={{ backgroundColor: theme.palette.background }}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
             {/* Route proteger */}
             <Route path="/editor" element={<ProfileEditor />} />
 
