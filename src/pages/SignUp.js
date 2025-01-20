@@ -4,35 +4,55 @@ import {
     Button,
     TextField,
     Typography,
-    Stepper,
-    Step,
-    StepLabel,
-    IconButton,
     InputAdornment,
     Stack,
-    Divider,
     FormHelperText,
+    FormControl,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TikTokIcon from "@mui/icons-material/VideoLibrary";
 import SteamIcon from "@mui/icons-material/SportsEsports";
 import SpotifyIcon from "@mui/icons-material/QueueMusic";
 import { useNavigate } from "react-router-dom";
-import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import CustomizedSteppers from "../components/SignUp/ProgressBarSign";
 const steps = [
-    "Choisissez votre lien",
-    "Renseignez votre email",
-    "Informations personnelles",
-    "Ajoutez vos réseaux sociaux",
-    "Ajoutez vos liens",
-    "Choisissez un thème",
+    "Lien",
+    "Infos de connexion",
+    "Vos informations",
+    "Réseaux sociaux",
+    "Vos liens",
+    "Thème",
 ];
+/**
+ * A review for form logik
+ * const [form, setForm] = useState({
+        link: "",
+        email: "",
+        password: "",
+        personnalData: { firstName: "", lastName: "" },
+        socialLinks: {
+            instagram: "",
+            facebook: "",
+            tiktok: "",
+            steam: "",
+            spotify: "",
+        },
+        additionalLinks: [""],
+        theme: "",
+        errors: {
+            link: "",
+            email: "",
+            password: "",
+            personalData: { firstName: "", lastName: "" },
+            theme: "",
+        },
 
+    }) */
 function SignUp() {
     const navigate = useNavigate();
 
@@ -40,9 +60,12 @@ function SignUp() {
     const [progress, setProgress] = useState(0);
     const [link, setLink] = useState("");
     const [linkValid, setLinkValid] = useState(null);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [personalData, setPersonalData] = useState({ firstName: "", lastName: "" });
+    const [passwordError, setPasswordError] = useState(false);
+    const [error, setError] = useState('');
     const [socialLinks, setSocialLinks] = useState({
         instagram: "",
         facebook: "",
@@ -50,17 +73,36 @@ function SignUp() {
         steam: "",
         spotify: "",
     });
+
+
+    const themes = [
+        { name: "Moderne", img: "https://via.placeholder.com/150" },
+        { name: "Classique", img: "https://via.placeholder.com/150" },
+        { name: "Coloré", img: "https://via.placeholder.com/150" },
+    ];
     const [additionalLinks, setAdditionalLinks] = useState(["", "", ""]);
     const [theme, setTheme] = useState("");
 
     const validateLink = (value) => {
         const reservedLinks = ["Titi", "Test"];
-        setLinkValid(!reservedLinks.includes(value));
+        setLinkValid(value.trim() !== "" && !reservedLinks.includes(value));
     };
 
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     const handleNextStep = () => {
+        if (step === 0 && !linkValid) {
+            setError("Veuillez choisir un lien valide.");
+            return;
+        }
+        if (step === 1 && (!validateEmail(email) || passwordError)) {
+            setError("Veuillez entrer un email valide et un mot de passe correct.");
+            return;
+        }
+        if (step === 2 && (!personalData.firstName || !personalData.lastName)) {
+            setError("Veuillez remplir vos informations personnelles.");
+            return;
+        }
         setStep(step + 1);
         setProgress(((step + 1) / steps.length) * 100);
     };
@@ -79,8 +121,37 @@ function SignUp() {
         navigate("/editor", { state: { link: `paa.ge/${link}` } });
     };
 
+    const validateURL = (url) =>
+        /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/.test(url);
+
+    const handleLinkChange = (value) => {
+        setLink(value);
+        const reservedLinks = ["Titi", "Test"];
+        setLinkValid(value.trim() !== "" && !reservedLinks.includes(value));
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Empêche le rechargement de la page
+        console.log({
+            link,
+            email,
+            password,
+            personalData,
+            socialLinks,
+            additionalLinks,
+            theme,
+        });
+        navigate("/editor")
+    };
+
     return (
-        <Box sx={{ padding: "16px", height: "100vh", display: "flex", flexDirection: "column" }}>
+        <Box component="form"
+            onKeyDown={(e) => {
+                if (e.key === "Enter" && step !== steps.length - 1) {
+                    e.preventDefault(); // Empêche la soumission si ce n'est pas la dernière étape
+                    handleNextStep();
+                }
+            }}
+            onSubmit={handleSubmit} sx={{ padding: "16px", height: "100vh", display: "flex", flexDirection: "column" }}>
             {/* Barre de progression */}
             <CustomizedSteppers stepData={steps} activeStep={step} />
 
@@ -97,18 +168,22 @@ function SignUp() {
                 {step === 0 && (
                     <Box>
                         <Typography variant="h6" textAlign="center" marginBottom="16px">
-                            Choisissez votre lien unique
+                            {steps[step]}
                         </Typography>
+                        <Typography variant="h6" color="primary" textAlign="center" marginBottom="16px">
+                            Choisissez votre lien unique !
+                        </Typography>
+
+
                         <TextField
                             fullWidth
+                            required
                             label="Lien"
-                            placeholder="Ex: MonLien"
+                            placeholder="Ex: toto"
                             value={link}
-                            onChange={(e) => {
-                                setLink(e.target.value);
-                                setLinkValid(null);
-                            }}
-                            onBlur={() => validateLink(link)}
+                            onChange={(e) => handleLinkChange(e.target.value)}
+                            error={linkValid === false}
+                            //onBlur={() => validateLink(link)}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">paa.ge/</InputAdornment>,
                                 endAdornment: linkValid !== null && (
@@ -119,7 +194,7 @@ function SignUp() {
                             }}
                         />
                         {linkValid === false && (
-                            <FormHelperText error>Ce lien est déjà pris. Veuillez en choisir un autre.</FormHelperText>
+                            <FormHelperText error>{error}</FormHelperText>
                         )}
                         <Button
                             fullWidth
@@ -127,7 +202,7 @@ function SignUp() {
                             color="primary"
                             onClick={handleNextStep}
                             sx={{ marginTop: "16px" }}
-                            disabled={!linkValid}
+                        //disabled={!linkValid}
                         >
                             Suivant
                         </Button>
@@ -138,33 +213,44 @@ function SignUp() {
                 {step === 1 && (
                     <Box>
                         <Typography variant="h6" textAlign="center" marginBottom="16px">
+                            {steps[step]}
+                        </Typography>
+                        <Typography variant="h6" color="primary" textAlign="center" marginBottom="16px">
                             Félicitations, paa.ge/{link} est à vous !
                         </Typography>
                         <TextField
+                            required
                             fullWidth
                             label="Email"
                             placeholder="email@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            error={!validateEmail(email) && email !== ""}
+                            helperText={!validateEmail(email) && email !== "" ? "Veuillez entrer un email valide." : ""}
                         />
                         {validateEmail(email) && (
                             <TextField
+                                required
                                 fullWidth
                                 label="Mot de passe"
                                 type="password"
                                 placeholder="******"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setPasswordError(e.target.value.length < 8);
+                                }}
+                                error={passwordError}
+                                helperText={passwordError ? "Le mot de passe doit comporter au moins 8 caractères." : ""}
                                 sx={{ marginTop: "16px" }}
-                            />
-                        )}
+                            />)}
                         <Button
                             fullWidth
                             variant="contained"
                             color="primary"
                             onClick={handleNextStep}
                             sx={{ marginTop: "16px" }}
-                            disabled={!validateEmail(email) || !password}
+                            disabled={!validateEmail(email) || password.length < 8}
                         >
                             Suivant
                         </Button>
@@ -175,15 +261,20 @@ function SignUp() {
                 {step === 2 && (
                     <Box>
                         <Typography variant="h6" textAlign="center" marginBottom="16px">
+                            {steps[step]}
+                        </Typography>
+                        <Typography variant="h6" color="primary" textAlign="center" marginBottom="16px">
                             Parlez-nous de vous
                         </Typography>
                         <TextField
+                            required
                             fullWidth
                             label="Prénom"
                             value={personalData.firstName}
                             onChange={(e) => setPersonalData({ ...personalData, firstName: e.target.value })}
                         />
                         <TextField
+                            required
                             fullWidth
                             label="Nom"
                             value={personalData.lastName}
@@ -207,6 +298,9 @@ function SignUp() {
                 {step === 3 && (
                     <Box>
                         <Typography variant="h6" textAlign="center" marginBottom="16px">
+                            {steps[step]}
+                        </Typography>
+                        <Typography variant="h6" color="primary" textAlign="center" marginBottom="16px">
                             Ajoutez vos réseaux sociaux
                         </Typography>
                         {[
@@ -238,10 +332,14 @@ function SignUp() {
                         </Stack>
                     </Box>
                 )}
+
                 {step === 4 && (
                     <Box>
-                        <Typography variant="h6" sx={{ marginBottom: "16px", textAlign: "center" }}>
-                            Ajoutez vos liens
+                        <Typography variant="h6" textAlign="center" marginBottom="16px">
+                            {steps[step]}
+                        </Typography>
+                        <Typography variant="h6" color="primary" sx={{ marginBottom: "16px", textAlign: "center" }}>
+                            Ajoutez vos liens additionnels
                         </Typography>
                         {additionalLinks.map((link, index) => (
                             <TextField
@@ -255,6 +353,10 @@ function SignUp() {
                                     updatedLinks[index] = e.target.value;
                                     setAdditionalLinks(updatedLinks);
                                 }}
+                                error={link !== "" && !validateURL(link)}
+                                helperText={
+                                    link !== "" && !validateURL(link) ? "Veuillez entrer une URL valide." : ""
+                                }
                                 sx={{ marginBottom: "16px" }}
                             />
                         ))}
@@ -270,24 +372,48 @@ function SignUp() {
                 )}
 
 
+
                 {/* Étape 6 : Choix du thème */}
                 {step === 5 && (
                     <Box>
                         <Typography variant="h6" textAlign="center" marginBottom="16px">
-                            Choisissez votre thème
+                            {steps[step]}
                         </Typography>
-                        <TextField
+                        <Typography variant="h6" color="primary" textAlign="center" marginBottom="16px">
+                            Choisissez votre thème unique !
+                        </Typography>
+                        <FormControl required fullWidth>
+                            <Select
+                                value={theme}
+                                onChange={(e) => setTheme(e.target.value)}
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>
+                                    Sélectionnez un thème
+                                </MenuItem>
+                                {themes.map((t, index) => (
+                                    <MenuItem key={index} value={t.name}>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <img src={t.img} alt={t.name} width={50} height={50} />
+                                            <Typography>{t.name}</Typography>
+                                        </Stack>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Button
                             fullWidth
-                            label="Thème"
-                            value={theme}
-                            onChange={(e) => setTheme(e.target.value)}
-                            placeholder="Exemple : Moderne, Classique"
-                        />
-                        <Button fullWidth variant="contained" color="primary" onClick={handleFinish} sx={{ marginTop: "16px" }}>
+                            variant="contained"
+                            color="primary"
+                            type={step === steps.length - 1 ? "submit" : "button"}
+                            sx={{ marginTop: "16px" }}
+                            disabled={!theme}
+                        >
                             Terminer
                         </Button>
                     </Box>
                 )}
+
 
                 {/* Bouton précédent */}
                 {step > 0 && (
@@ -295,6 +421,8 @@ function SignUp() {
                         Retour
                     </Button>
                 )}
+
+
             </Box>
         </Box>
     );
