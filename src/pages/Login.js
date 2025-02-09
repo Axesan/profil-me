@@ -2,21 +2,30 @@ import React, { useState, useContext } from "react";
 import { Button, Box, TextField } from "@mui/material";
 
 import { loginUser } from "../api/api";
-
+import { AuthContext } from "../utils/AuthContext";
+import { useNavigate } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const { login, setToken } = useContext(AuthContext);
+  const { navigate } = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginUser({ email, password });
-      console.log("Connexion réussie !");
-      // Rediriger vers le tableau de bord ou une autre page
-      setError("Connexion reussie !");
+      const { token, message, user } = await loginUser({
+        email,
+        password,
+      });
+      setToken(token);
+      localStorage.setItem("token", token);
+      login(user); // Mets à jour l'état utilisateur
+      setError(""); // Réinitialiser l'erreur s'il y en avait une
+      alert(message); // Afficher un message de succès
+      // Rediriger vers le tableau de bord
+      navigate("/dashboard");
     } catch (err) {
-      setError("Email ou mot de passe incorrect.");
+      setError(err.error);
     }
   };
 
