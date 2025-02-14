@@ -41,6 +41,20 @@ export async function registerUser(userData) {
   }
 }
 
+export async function loginUser(userData) {
+  try {
+    const response = await axios.post(
+      "http://192.168.1.95:3001/api/login", // Mets la bonne route pour la connexion
+      userData
+    );
+    const data = response.data; // Assure-toi que le backend retourne un token
+    return data;
+  } catch (error) {
+    console.error("Erreur lors de la connexion :", error);
+    throw error;
+  }
+}
+
 export async function getThemes() {
   try {
     const response = await axios.get("http://192.168.1.95:3001/api/register");
