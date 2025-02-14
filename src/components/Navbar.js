@@ -110,7 +110,7 @@ export default function Navbar() {
           </Box>
 
           {/* User Menu */}
-          {token && (
+          {token && user && (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -153,7 +153,8 @@ export default function Navbar() {
               </Button>
             </Box>
           )}
-          {!token && (
+
+          {!token && !user && (
             <>
               <Button component={Link} to={"/login"} sx={{ color: "white" }}>
                 Connexion

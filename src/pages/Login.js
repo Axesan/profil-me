@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Button, Box, TextField } from "@mui/material";
 
 import { loginUser } from "../api/api";
@@ -9,23 +9,24 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login, setToken } = useContext(AuthContext);
-  const { navigate } = useNavigate();
+
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user && token) {
+      navigate("/"); // Redirige vers la page protégée
+    }
+  }, [user, token, navigate]); // Vérifie dès que le token ou l'utilisateur change
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const { token, message, user } = await loginUser({
-        email,
-        password,
-      });
-      setToken(token);
-      localStorage.setItem("token", token);
-      login(user); // Mets à jour l'état utilisateur
-      setError(""); // Réinitialiser l'erreur s'il y en avait une
-      alert(message); // Afficher un message de succès
-      // Rediriger vers le tableau de bord
-      navigate("/dashboard");
+      const { token, user } = await loginUser({ email, password });
+      login(user, token); // Passe le token dans `login`
+      setError("");
     } catch (err) {
-      setError(err.error);
+      setError(err.response?.data?.error || "Une erreur est survenue.");
     }
   };
 
