@@ -1,32 +1,16 @@
 import { Box, Typography, Button, Grid2 } from "@mui/material";
+import React from "react";
+import { AuthContext } from "../utils/AuthContext";
+import Bannier from "../components/Home/Bannier";
+function Home() {
+  const { token } = React.useContext(AuthContext);
+  console.log(React.useContext(AuthContext));
 
-function Home(params) {
   return (
     <div>
       {/* Section principale */}
       <Box sx={{ marginBottom: "40px", display: "grid" }}>
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: "bold",
-            marginBottom: "16px",
-          }}
-        >
-          Vos profils sur leurs meilleurs jours
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            marginBottom: "24px",
-            color: "text.secondary",
-          }}
-        >
-          Créez, personnalisez et partagez des profils uniques qui reflètent
-          votre personnalité et vos ambitions.
-        </Typography>
-        <Button variant="contained" color="primary" size="large" href="/editor">
-          Commencer Maintenant
-        </Button>
+        <Bannier isLoggedIn={token} />
       </Box>
 
       {/* Section avec trois colonnes */}
